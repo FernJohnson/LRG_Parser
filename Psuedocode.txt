@@ -1,0 +1,18 @@
+import xml.etree.ElementTree as ET
+
+"""
+
+Parses LRG XML file to fin exon locations. 
+
+
+"""
+
+tree = ET.parse('LRG_28.xml') # Using test XML
+root = tree.getroot()
+
+for child in root:
+    print(child.tag, child.attrib)
+
+
+# v = root.findall("./fixed_annotation/transcript/exon") Reference to list of exons in this file
+# len(v) = 41 = number of exons
