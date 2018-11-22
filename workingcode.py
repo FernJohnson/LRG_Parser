@@ -56,5 +56,14 @@ for exon in v:
 # Find the chromosome number - this is found under fixed annotation.
 
 n = root.find("./updatable_annotation/annotation_set/mapping")
-
 chrom = n.get('other_name')
+
+# Creating bed file with headers
+
+bedfile = open("Bedfile.txt", "w")
+
+bedfile.write("Chrom" + "\t" + "Start" + "\t" + "End" + "\n")
+for i in range(len(start)):
+    bedfile.write(chrom + "\t" + start[i] + "\t" + end[i] + "\n")
+
+bedfile.close()
