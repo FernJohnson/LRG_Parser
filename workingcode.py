@@ -40,24 +40,20 @@ end = []
         #start += a
         #rint(a)
 
-#print(start)
+# print(start)
 
-#for each exon, start the start and end values for the first set of coordinates (LRG)
+# for each exon, start the start and end values for the first set of coordinates (LRG)
 
 for exon in v:
     s = exon[0].get('start')
-    start.append(s)
-
-#print(start)
-
-for exon in v:
     e = exon[0].get('end')
+    start.append(s)
     end.append(e)
+    
+# print(start, "\n", end)
 
-#print(end)
 
-
-#Find the chromosome number - this is found under fixed annotation.
+# Find the chromosome number - this is found under fixed annotation.
 
 n = root.find("./updatable_annotation/annotation_set/mapping")
 
