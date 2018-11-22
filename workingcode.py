@@ -18,7 +18,15 @@ Args = LRG_file Build
 # Find LRG file from command line
 #script, LRG_file = sys.argv
 
-def parseXML():
+def main():
+    root, chromosome, LRG_ID_num = parseXML(LRG_file)
+    start, end = getExons(root)
+    genstring, start_gen, end_gen = converttoGenome(root, start, end, BuildName)
+    writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
+
+
+
+def parseXML(LRG_file):
 
     # parses xml, find the room of the structure
     tree = ET.parse(LRG_file) # Using test XML 
@@ -55,7 +63,7 @@ def getExons(root):
 
 
 
-def converttoGenome(root, start, end):
+def converttoGenome(root, start, end, BuildName):
 
     # uses build name from comman line. ****Currently hard coded to be GRCh37.p13****
     
@@ -89,12 +97,6 @@ def writeBedFile(LRG_ID_num, genstring, chromosome, start_gen, end_gen):
         bedfile.write(chromosome + "\t" + str(start_gen[i]) + "\t" + str(end_gen[i]) + "\n")
 
     bedfile.close()
-
-def main():
-    root, chromosome, LRG_ID_num = parseXML()
-    start, end = getExons(root)
-    genstring, start_gen, end_gen = converttoGenome(root, start, end)
-    writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
 
 if __name__ == "__main__":
     main()
