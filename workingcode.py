@@ -1,14 +1,21 @@
 import xml.etree.ElementTree as ET
+import sys
 
 """
 
-Parses LRG XML file to fin exon locations. 
+Parses LRG XML file inout to find exon locations. 
 
+Args = LRG file ... 
 
 """
+# Find LRG file from command line
+#script, LRG_file = sys.argv
 
-#parse xml, find the room of the structure
-tree = ET.parse('LRG_34.xml') # Using test XML
+# Get LRG ID number for adding to file name
+LRG_ID_num = root.find("./fixed_annotation/id").text
+
+# parses xml, find the room of the structure
+tree = ET.parse('LRG_34.xml') # Using test XML 
 root = tree.getroot()
 
 #print the tag and attribute of each child in the root
@@ -21,7 +28,6 @@ transcripts  = root.findall("./fixed_annotation/transcript") #Reference to list 
 
 print(len(transcripts))
 print(transcripts)
-
 
 #find all the exons where the transcript name is 't1'
 v = root.findall("./fixed_annotation/transcript[@name='t1']/exon") 
