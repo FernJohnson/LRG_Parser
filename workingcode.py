@@ -11,6 +11,9 @@ Args = LRG file ...
 # Find LRG file from command line
 #script, LRG_file = sys.argv
 
+# Get LRG ID number for adding to file name
+LRG_ID_num = root.find("./fixed_annotation/id").text
+
 # parses xml, find the room of the structure
 tree = ET.parse('LRG_34.xml') # Using test XML 
 root = tree.getroot()
