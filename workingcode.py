@@ -1,11 +1,18 @@
 import xml.etree.ElementTree as ET
 import sys
 
+BuildName = "GRCh38.p12"
+LRG_file = 'LRG_34.xml'
+
+#Script, LRG_file, BuildName = sys.argv
+
 """
 
 Parses LRG XML file inout to find exon locations. 
 
-Args = LRG file ... 
+Args = LRG_file Build 
+    
+    Example = FileLocation/LRG_10.xml "GRCh37.p13"
 
 """
 # Find LRG file from command line
@@ -14,7 +21,7 @@ Args = LRG file ...
 def parseXML():
 
     # parses xml, find the room of the structure
-    tree = ET.parse('LRG_34.xml') # Using test XML 
+    tree = ET.parse(LRG_file) # Using test XML 
     root = tree.getroot()
     
     # Find the chromosome number - this is found under fixed annotation.
@@ -50,24 +57,20 @@ def getExons(root):
 
 def converttoGenome(root, start, end):
 
+    # uses build name from comman line. ****Currently hard coded to be GRCh37.p13****
     
-    #NOTE only picks the first build (37 right now)
-
-    mapping = root.find("./updatable_annotation/annotation_set/mapping")
-    
+    GenomicReference = root.find(f"./updatable_annotation/annotation_set/mapping[@coord_system='{BuildName}']/")
     # Find the other start - this will convert to a genome build coordinates
-    otherstart = mapping.get('other_start')
+    otherstart = GenomicReference.get('other_start')
+    
     #We must convert the string to int
     otherstartint = int(otherstart)
     
-    #NOTE only picks the first build (37 right now)
-    genbuild = mapping.get('coord_system')
-
     #Tify up the buildname so it can be used in the BedFile name
-    genstring=genbuild[0:6]+'_' + genbuild[7:10]
+    genstring=BuildName[0:6] +'-' + BuildName[7:10]
 
 
-    #Convert lrg exon coordinates using 'other start' into genome coords - for build 37 only now!
+    #Convert lrg exon coordinates using 'other start' into genome coords
 
     start_gen = [int(x)+otherstartint for x in start]
     end_gen = [int(x)+otherstartint for x in end]
