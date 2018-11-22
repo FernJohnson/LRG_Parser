@@ -11,92 +11,87 @@ Args = LRG file ...
 # Find LRG file from command line
 #script, LRG_file = sys.argv
 
+def parseXML():
 
-
-# parses xml, find the room of the structure
-tree = ET.parse('LRG_34.xml') # Using test XML 
-root = tree.getroot()
-
-#print the tag and attribute of each child in the root
-
-for child in root:
-    print(child.tag, child.attrib)
+    # parses xml, find the room of the structure
+    tree = ET.parse('LRG_34.xml') # Using test XML 
+    root = tree.getroot()
     
-#find all annotations in the transcript
-transcripts  = root.findall("./fixed_annotation/transcript") #Reference to list of exons in this file
-
-# Get LRG ID number for adding to file name
-LRG_ID_num = root.find("./fixed_annotation/id").text
-
-print(len(transcripts))
-print(transcripts)
-
-#find all the exons where the transcript name is 't1'
-v = root.findall("./fixed_annotation/transcript[@name='t1']/exon") 
-# len(v) = 41 = number of exons
-
-#for each exon print the first attribute (the LRG_exon)
-#for exon in v:
- #   #print(exon.attrib)
-  #  print(exon[0].attrib)
+    # Find the chromosome number - this is found under fixed annotation.
+    mapping = root.find("./updatable_annotation/annotation_set/mapping")
+    chrom = mapping.get('other_name')
+    chromosome='chr'+chrom
     
-start = []
-end = []
-
-#for exon in v:
- #   for a in exon[0].items():
-        #start += a
-        #rint(a)
-
-# print(start)
-
-# for each exon, start the start and end values for the first set of coordinates (LRG)
-
-for exon in v:
-    s = exon[0].get('start')
-    e = exon[0].get('end')
-    start.append(s)
-    end.append(e)
+    ## Get LRG ID number for adding to file name
+    LRG_ID_num = root.find("./fixed_annotation/id").text
     
-# print(start, "\n", end)
+    return root, chromosome, LRG_ID_num
+
+def getExons(root):    
+    
+    
+    #find all the exons where the transcript name is 't1'
+    exons = root.findall("./fixed_annotation/transcript[@name='t1']/exon") 
+
+    #For each exon, start the start and end values for the first set of coordinates (LRG)
+    
+    start = []
+    end = []
+    for exon in exons:
+        s = exon[0].get('start')
+        e = exon[0].get('end')
+        start.append(s)
+        end.append(e)
+    
+
+    return start, end
 
 
 
-# Find the chromosome number - this is found under fixed annotation.
-# Find the other start - this will convert to a genome build coordinates
-#NOTE only picks the first build (37 right now)
+def converttoGenome(root, start, end):
 
-n = root.find("./updatable_annotation/annotation_set/mapping")
-chrom = n.get('other_name')
-otherstart = n.get('other_start')
-genbuild = n.get('coord_system')
+    
+    #NOTE only picks the first build (37 right now)
 
+    mapping = root.find("./updatable_annotation/annotation_set/mapping")
+    
+    # Find the other start - this will convert to a genome build coordinates
+    otherstart = mapping.get('other_start')
+    #We must convert the string to int
+    otherstartint = int(otherstart)
+    
+    #NOTE only picks the first build (37 right now)
+    genbuild = mapping.get('coord_system')
 
-genstring=genbuild[0:6]+'_' + genbuild[7:10]
-
-
-#print(type(otherstart))
-otherstartint = int(otherstart)
-
-chromosome='chr'+chrom
-print(chromosome)
-
-#Convert lrg exon coordinates using 'other start' into genome coords - for build 37!
-
-start_gen = [int(x)+otherstartint for x in start]
-end_gen = [int(x)+otherstartint for x in end]
-
-print(start_gen)
-print(end_gen)
-
-# Creating bed file with headers
+    #Tify up the buildname so it can be used in the BedFile name
+    genstring=genbuild[0:6]+'_' + genbuild[7:10]
 
 
+    #Convert lrg exon coordinates using 'other start' into genome coords - for build 37 only now!
 
-bedfile = open(f'{LRG_ID_num}_{genstring}.bed', "w")
+    start_gen = [int(x)+otherstartint for x in start]
+    end_gen = [int(x)+otherstartint for x in end]
+    
+    return genstring, start_gen, end_gen
 
-bedfile.write("Chrom" + "\t" + "Start" + "\t" + "End" + "\n")
-for i in range(len(start)):
-    bedfile.write(chromosome + "\t" + str(start_gen[i]) + "\t" + str(end_gen[i]) + "\n")
+def writeBedFile(LRG_ID_num, genstring, chromosome, start_gen, end_gen):
 
-bedfile.close()
+    # Creating bed file 
+
+
+    bedfile = open(f'{LRG_ID_num}_{genstring}.bed', "w")
+    
+    bedfile.write("Chrom" + "\t" + "Start" + "\t" + "End" + "\n")
+    for i in range(len(start_gen)):
+        bedfile.write(chromosome + "\t" + str(start_gen[i]) + "\t" + str(end_gen[i]) + "\n")
+
+    bedfile.close()
+
+def main():
+    root, chromosome, LRG_ID_num = parseXML()
+    start, end = getExons(root)
+    genstring, start_gen, end_gen = converttoGenome(root, start, end)
+    writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
+
+if __name__ == "__main__":
+    main()
