@@ -3,8 +3,9 @@ import sys
 
 BuildName = "GRCh38.p12"
 LRG_file = 'LRG_34.xml'
+Transcript = "t1"
 
-#Script, LRG_file, BuildName = sys.argv
+#Script, LRG_file, BuildName, Transcript = sys.argv
 
 """
 
@@ -12,7 +13,7 @@ Parses LRG XML file inout to find exon locations.
 
 Args = LRG_file Build 
     
-    Example = FileLocation/LRG_10.xml "GRCh37.p13"
+    Example = FileLocation/LRG_10.xml GRCh37.p13 t1
 
 """
 # Find LRG file from command line
@@ -46,7 +47,7 @@ def getExons(root):
     
     
     #find all the exons where the transcript name is 't1'
-    exons = root.findall("./fixed_annotation/transcript[@name='t1']/exon") 
+    exons = root.findall(f"./fixed_annotation/transcript[@name='{Transcript}']/exon") 
 
     #For each exon, start the start and end values for the first set of coordinates (LRG)
     
@@ -90,7 +91,7 @@ def writeBedFile(LRG_ID_num, genstring, chromosome, start_gen, end_gen):
     # Creating bed file 
 
 
-    bedfile = open(f'{LRG_ID_num}_{genstring}.bed', "w")
+    bedfile = open(f'{LRG_ID_num}_{genstring}_{Transcript}.bed', "w")
     
     bedfile.write("Chrom" + "\t" + "Start" + "\t" + "End" + "\n")
     for i in range(len(start_gen)):
