@@ -40,6 +40,7 @@ def main():
     writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
 
 
+
 def parseXML(LRG_file):
 
     # parses xml, find the room of the structure
@@ -48,7 +49,7 @@ def parseXML(LRG_file):
         
     except FileNotFoundError:
             print("File not found, please check name")
-    except ET.ParseError:
+    except ParseError:
             print("LRG file not XML format! Please check file")
 
         
@@ -68,18 +69,19 @@ def getExons(root, Transcript):
     
     
     #find all the exons where the transcript name is 't1'
-    exon = root.find(f"./fixed_annotation/transcript[@name='{Transcript}']/exon") 
+    exons = root.findall(f"./fixed_annotation/transcript[@name='{Transcript}']/exon") 
      
     #For each exon, start the start and end values for the first set of coordinates (LRG)
-    assert ET.iselement(exon), 'Transcript not found in LRG file!'
+    assert ET.iselement(exons[0]), 'Transcript not found in LRG file!'
     
     start = []
     end = []
     
-    s = exon[0].get('start')
-    e = exon[0].get('end')
-    start.append(s)
-    end.append(e)
+    for exon in exons:
+        s = exon[0].get('start')
+        e = exon[0].get('end')
+        start.append(s)
+        end.append(e)
     
 
     return start, end
@@ -99,7 +101,7 @@ def converttoGenome(root, start, end, BuildName):
     #We must convert the string to int
     otherstartint = int(otherstart)
     
-    #Tify up the buildname so it can be used in the BedFile name
+    #Tidy up the buildname so it can be used in the BedFile name
     genstring=BuildName[0:6] +'-' + BuildName[7:10]
 
 
