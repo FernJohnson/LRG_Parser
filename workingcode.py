@@ -87,29 +87,43 @@ def getExons(root, Transcript):
     return start, end
 
 
-
 def converttoGenome(root, start, end, BuildName):
 
     # uses build name from comman line. ****Currently hard coded to be GRCh37.p13****
+    
     
     GenomicReference = root.find(f"./updatable_annotation/annotation_set/mapping[@coord_system='{BuildName}']/")
     # Find the other start - this will convert to a genome build coordinates
     
     assert ET.iselement(GenomicReference), 'Genome Build not found, please check build'
-    otherstart = GenomicReference.get('other_start')
     
-    #We must convert the string to int
-    otherstartint = int(otherstart)
+    Strand = int(GenomicReference.get('strand'))
+    if Strand == -1:
+        otherstart = GenomicReference.get('other_end')
+        
+        #We must convert the string to int
+        otherstartint = int(otherstart)
     
+        #Convert lrg exon coordinates using 'other start' into genome coords
+        start_gen = [int(x)-(otherstartint+1) for x in start]
+        end_gen = [int(x)-(otherstartint+1) for x in end]
+        
+        
+    else:
+        otherstart = GenomicReference.get('other_start')
+    
+        #We must convert the string to int
+        otherstartint = int(otherstart)
+    
+        #Convert lrg exon coordinates using 'other start' into genome coords
+        start_gen = [int(x)+(otherstartint-1) for x in start]
+        end_gen = [int(x)+(otherstartint-1) for x in end]
+        
+       
     #Tidy up the buildname so it can be used in the BedFile name
     genstring=BuildName[0:6] +'-' + BuildName[7:10]
 
 
-    #Convert lrg exon coordinates using 'other start' into genome coords
-
-    start_gen = [int(x)+otherstartint for x in start]
-    end_gen = [int(x)+otherstartint for x in end]
-    
     return genstring, start_gen, end_gen
 
 def writeBedFile(LRG_ID_num, genstring, chromosome, start_gen, end_gen):
