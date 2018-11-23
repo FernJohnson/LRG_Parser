@@ -105,8 +105,8 @@ def converttoGenome(root, start, end, BuildName):
         otherstartint = int(otherstart)
     
         #Convert lrg exon coordinates using 'other start' into genome coords
-        start_gen = [int(x)-(otherstartint+1) for x in start]
-        end_gen = [int(x)-(otherstartint+1) for x in end]
+        start_gen = [(otherstartint+1)-int(x) for x in start]
+        end_gen = [(otherstartint+1)-int(x) for x in end]
         
         
     else:
