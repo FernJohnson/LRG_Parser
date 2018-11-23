@@ -1,9 +1,23 @@
 import xml.etree.ElementTree as ET
 import sys
+import argparse
 
-BuildName = "GRCh38.p12"
-LRG_file = 'LRG_34.xml'
-Transcript = "t1"
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-l', '--LRG', required=True, dest="LRG_File", help='The LRG xml file to be processed')
+parser.add_argument('-b', '--Build', default='GRCh37.p13', dest="BuildName", help='Human genome build to use')
+parser.add_argument('-t', '--Transcript', default='t1', dest="Transcript", help='Which LRG transcript to use')
+
+results = parser.parse_args()
+
+BuildName = results.BuildName
+LRG_file = results.LRG_File
+Transcript = results.Transcript
+
+
+#BuildName = "GRCh38.p12"
+#LRG_file = 'LRG_34.xml'
+#Transcript = "t1"
 
 #Script, LRG_file, BuildName, Transcript = sys.argv
 
@@ -11,7 +25,7 @@ Transcript = "t1"
 
 Parses LRG XML file inout to find exon locations. 
 
-Args = LRG_file Build 
+Args = LRG_file Build Transcript
     
     Example = FileLocation/LRG_10.xml GRCh37.p13 t1
 
@@ -21,7 +35,7 @@ Args = LRG_file Build
 
 def main():
     root, chromosome, LRG_ID_num = parseXML(LRG_file)
-    start, end = getExons(root)
+    start, end = getExons(root, Transcript)
     genstring, start_gen, end_gen = converttoGenome(root, start, end, BuildName)
     writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
 
@@ -43,7 +57,7 @@ def parseXML(LRG_file):
     
     return root, chromosome, LRG_ID_num
 
-def getExons(root):    
+def getExons(root, Transcript):    
     
     
     #find all the exons where the transcript name is 't1'
