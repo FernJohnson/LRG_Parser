@@ -40,11 +40,18 @@ def main():
     writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
 
 
-
 def parseXML(LRG_file):
 
     # parses xml, find the room of the structure
-    tree = ET.parse(LRG_file) # Using test XML 
+    try:
+        tree = ET.parse(LRG_file) # Using test XML 
+        
+    except FileNotFoundError:
+            print("File not found, please check name")
+    except ET.ParseError:
+            print("LRG file not XML format! Please check file")
+
+        
     root = tree.getroot()
     
     # Find the chromosome number - this is found under fixed annotation.
@@ -61,17 +68,18 @@ def getExons(root, Transcript):
     
     
     #find all the exons where the transcript name is 't1'
-    exons = root.findall(f"./fixed_annotation/transcript[@name='{Transcript}']/exon") 
-
+    exon = root.find(f"./fixed_annotation/transcript[@name='{Transcript}']/exon") 
+     
     #For each exon, start the start and end values for the first set of coordinates (LRG)
+    assert ET.iselement(exon), 'Transcript not found in LRG file!'
     
     start = []
     end = []
-    for exon in exons:
-        s = exon[0].get('start')
-        e = exon[0].get('end')
-        start.append(s)
-        end.append(e)
+    
+    s = exon[0].get('start')
+    e = exon[0].get('end')
+    start.append(s)
+    end.append(e)
     
 
     return start, end
@@ -84,6 +92,8 @@ def converttoGenome(root, start, end, BuildName):
     
     GenomicReference = root.find(f"./updatable_annotation/annotation_set/mapping[@coord_system='{BuildName}']/")
     # Find the other start - this will convert to a genome build coordinates
+    
+    assert ET.iselement(GenomicReference), 'Genome Build not found, please check build'
     otherstart = GenomicReference.get('other_start')
     
     #We must convert the string to int
