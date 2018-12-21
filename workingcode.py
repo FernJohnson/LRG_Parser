@@ -13,29 +13,30 @@ Args = LRG_file Build Transcript
 
 """
 
-parser = argparse.ArgumentParser()
-
-# Setting arguments for parser - LRG file, Genome build, Transcript required
-
-parser.add_argument('-l', '--LRG', required=True, dest="LRG_File", help='The LRG xml file to be processed')
-parser.add_argument('-b', '--Build', default='GRCh37.p13', dest="BuildName", help='Human genome build to use')
-parser.add_argument('-t', '--Transcript', default='t1', dest="Transcript", help='Which LRG transcript to use')
-
-results = parser.parse_args() 
-
-# Storing inputs in variables
-
-BuildName = results.BuildName
-LRG_file = results.LRG_File
-Transcript = results.Transcript
-
 def main():
+    
+    parser = argparse.ArgumentParser()
 
+    # Setting arguments for parser - LRG file, Genome build, Transcript required
+
+    parser.add_argument('-l', '--LRG', required=True, dest="LRG_File", help='The LRG xml file to be processed')
+    parser.add_argument('-b', '--Build', default='GRCh37.p13', dest="BuildName", help='Human genome build to use')
+    parser.add_argument('-t', '--Transcript', default='t1', dest="Transcript", help='Which LRG transcript to use')
+
+    results = parser.parse_args()
+
+    # Storing inputs in variables
+
+    BuildName = results.BuildName
+    LRG_file = results.LRG_File
+    Transcript = results.Transcript
+    
     root, chromosome, LRG_ID_num = parseXML(LRG_file)
     start, end = getExons(root, Transcript)
     genstring, start_gen, end_gen = converttoGenome(root, start, end, BuildName)
-    writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen)
+    writeBedFile(LRG_ID_num,genstring, chromosome, start_gen, end_gen, Transcript)
 
+    return BuildName, LRG_file, Transcript
 
 def parseXML(LRG_file):
 
@@ -124,7 +125,7 @@ def converttoGenome(root, start, end, BuildName):
 
     return genstring, start_gen, end_gen
 
-def writeBedFile(LRG_ID_num, genstring, chromosome, start_gen, end_gen):
+def writeBedFile(LRG_ID_num, genstring, chromosome, start_gen, end_gen, Transcript):
 
     # Creating bed file using chromosome number, start and end genomic coordinates and strings genome build name and LRG ID for file creation
 
