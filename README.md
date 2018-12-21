@@ -40,12 +40,12 @@ LRG is a required argument. The genome build defaults to `GRCh37.p13`. The trans
 Example use:
 
 ```python
-python LRG_Parser -l LRG_34.xml -b GRCh37.p13 -t t1
+python LRG_Parser.py -l LRG_34.xml -b GRCh37.p13 -t t1
 ```
 
 ## Testing
 
-The `LRG_tests.py` script performs quality checks on the `LRG_Parser.py` to ensure it functions as expected after any modification is made.
+The `LRG_tests.py` script performs quality checks on `LRG_Parser.py` to ensure it functions as expected after any modification is made.
 
 The LRG file `LRG_12.xml` is used to test the script, click [here](http://ftp.ebi.ac.uk/pub/databases/lrgex/LRG_12.xml) to find it. Please ensure that you have this LRG file downloaded and in the same directory as the script. 
 
