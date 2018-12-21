@@ -7,9 +7,18 @@ import argparse
 
 Parses LRG XML file input to find exon locations. 
 
-Args = LRG_file Build Transcript
-    
-    Example = FileLocation/LRG_10.xml GRCh37.p13 t1
+The script is called using the following arguments:
+
+*  '-l' or '--LRG'
+*  '-b' or '--Build'
+*  '-t' or '--Transcript'
+
+LRG is a required argument. The genome build defaults to `GRCh37.p13`. The transcript defaults to `t1` (transcript 1). 
+
+Example use:
+
+python LRG_Parser -l LRG_34.xml -b GRCh37.p13 -t t1
+
 
 """
 
