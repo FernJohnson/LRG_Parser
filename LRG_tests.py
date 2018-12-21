@@ -1,7 +1,10 @@
-from workingcode import parseXML, getExons, converttoGenome, writeBedFile
+from LRG_Parser import parseXML, getExons, converttoGenome, writeBedFile
 
 import xml.etree.ElementTree as ET
 import sys
+
+#A simple script to test the functionality of the LRG parser after changes have been made to the script
+#LRG_12 is hardcoded - if a different LRG is used, the final test mude be updated!
 
 
 tree = ET.parse('LRG_12.xml')
